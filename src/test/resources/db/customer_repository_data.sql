@@ -1,10 +1,12 @@
 -- Create the customers table
-CREATE TABLE customers (
+CREATE TABLE IF NOT EXISTS customers (
     customer_id BIGINT PRIMARY KEY,
     customer_name VARCHAR(50),
     contact_name VARCHAR(50),
     country VARCHAR(50)
 );
+
+DELETE FROM customers;
 
 -- insert statements for Table 1: customers
 INSERT INTO customers (customer_id, customer_name, contact_name, country) VALUES

@@ -6,6 +6,8 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
+import java.util.Optional;
+
 import static com.goit.hibernate.app.util.Constants.LOG_ENCODING;
 import static com.goit.hibernate.app.util.Constants.LOG_FILE;
 import static com.goit.hibernate.app.util.Constants.LOG_LEVEL;
@@ -29,20 +31,25 @@ public class LoggingConfiguration {
             consoleAppender.setEncoding(environment.getProperty(LOG_ENCODING));
             consoleAppender.activateOptions();
 
-            // creates file appender
-            DailyRollingFileAppender rollingFileAppender = new DailyRollingFileAppender();
-            rollingFileAppender.setEncoding(environment.getProperty(LOG_ENCODING));
-            rollingFileAppender.setFile(environment.getProperty(LOG_FILE));
-            rollingFileAppender.setLayout(layout);
-            rollingFileAppender.setDatePattern("'.'yyyy-MM-dd");
-            rollingFileAppender.activateOptions();
-
             // configures the root logger
             Logger rootLogger = Logger.getRootLogger();
             rootLogger.setLevel(Level.toLevel(environment.getProperty(LOG_LEVEL)));
             rootLogger.removeAllAppenders();
             rootLogger.addAppender(consoleAppender);
-            rootLogger.addAppender(rollingFileAppender);
+
+            // creates file appender
+            Optional<String> fileName = environment.getPropertyOptional(LOG_FILE);
+
+            fileName.ifPresent(logFile -> {
+                DailyRollingFileAppender rollingFileAppender = new DailyRollingFileAppender();
+                rollingFileAppender.setEncoding(environment.getProperty(LOG_ENCODING));
+                rollingFileAppender.setFile(logFile);
+                rollingFileAppender.setLayout(layout);
+                rollingFileAppender.setDatePattern("'.'yyyy-MM-dd");
+                rollingFileAppender.activateOptions();
+                rootLogger.addAppender(rollingFileAppender);
+            });
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

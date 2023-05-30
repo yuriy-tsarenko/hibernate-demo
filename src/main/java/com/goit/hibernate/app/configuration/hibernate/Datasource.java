@@ -13,8 +13,8 @@ public class Datasource {
     private final Configuration configuration;
     private final SessionFactory sessionFactory;
 
-    public Datasource(Environment environment) {
-        this.configuration = HibernateConfiguration.setup(environment);
+    public Datasource(Environment environment, Class<?>... entities) {
+        this.configuration = HibernateConfiguration.setup(environment, entities);
         this.sessionFactory = createSessionFactory();
     }
 

@@ -2,12 +2,13 @@ package com.goit.hibernate.app.repository;
 
 import com.goit.hibernate.app.configuration.hibernate.Datasource;
 import com.goit.hibernate.app.entity.CustomerEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
-import org.intellij.lang.annotations.Language;
 
 import java.util.List;
 
+@Slf4j
 public class CustomerEntityRepository {
 
     private final Datasource datasource;
@@ -18,8 +19,12 @@ public class CustomerEntityRepository {
 
     public List<CustomerEntity> findAll() {
         try (Session session = datasource.openSession()) {
-            Query<CustomerEntity> sessionQuery = session.createQuery("select c from CustomerEntity c");
+            Query<CustomerEntity> sessionQuery = session.createQuery("select c from CustomerEntity c", CustomerEntity.class);
+            log.info("QUERY:{}", sessionQuery);
             return sessionQuery.getResultList();
+        } catch (Exception e) {
+            log.error("findAll", e);
+            throw new RuntimeException(e);
         }
     }
 }
